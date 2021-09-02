@@ -26,7 +26,7 @@ erc20|erc20|
 erc223|erc223|
 erc721|erc721|
 erc1155|erc1155|
-symbol|symbol|token的symbol，如ddd等
+symbol|symbol|token的symbol，如eth等
 decimals|精度|就是小数后的位数，注意有s
 balance|余额|
 transfer|转帐|
@@ -45,6 +45,8 @@ std|标准"库"|它是standard的简称，但翻译成中文叫标准库，虽�
 sdk|sdk |software development kit，软件开发工具包，不建议翻译为中文
 jdk|jdk|java development kit，java开发工具包，不建议翻译为中文
 UB|UB|undefined behavior,未定义行为
+WebRTC|WebRTC|全名Real-time communication for the web，是一种端到端的实时通信，主流的浏览器都支持（也有native api支持非浏览器下使用）。主要有两部分，一是建立端到端的连接，二是支持音视频及数据
+
 ##方法名，一般为动词
 en| cn |note
 ----|----|----

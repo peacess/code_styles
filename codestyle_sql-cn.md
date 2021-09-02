@@ -1,6 +1,6 @@
 [中文](./codestyle_sql-cn.md)  
 
-# Code Style -- SQL
+# Code Style -- SQL 0.1
 
 ## 规则
 1. 遵守设计原则

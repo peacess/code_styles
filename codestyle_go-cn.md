@@ -1,6 +1,6 @@
 [中文](./codestyle_go-cn.md)  
 
-# Code Style -- go
+# Code Style -- go 1.0
 
 ## 规则
 

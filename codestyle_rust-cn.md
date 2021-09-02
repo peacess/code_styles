@@ -1,6 +1,6 @@
 [中文](./codestyle_rust-cn.md)
 
-# Code Style -- rust
+# Code Style -- rust 0.3
 
 ## 名词
 
@@ -48,7 +48,7 @@ FnX：是Fn,FnMut,FnOnce中的一种或多种
 
 [遵守Rust的命名](https://rust-lang.github.io/api-guidelines/naming.html)  
 [RFC0430 finalizing naming conventions](https://github.com/rust-lang/rfcs/blob/master/text/0430-finalizing-naming-conventions.md)  
-常用单词[Words](./words_cn_en.md)
+常用单词[Words](./words_cn_en.md)   
 
 1. 所有源代码文件名，使用小写，加下划线
 2. toml中的package或bin 命名使用下划线，不使用减号， 保持package name 与crate或lib 的名字一至

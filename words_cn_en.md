@@ -111,3 +111,7 @@ SSL| |安全套接层（英语：Secure Sockets Layer，缩写：SSL）
 CA| |数字证书认证机构（英语：Certificate Authority，缩写为CA）
 digital certificate|数字证书|
 x509|x509 | 是密码学里公钥证书的格式标准
+TEE|可信执行环境|Trusted Execution Environment
+REE||Rich OS Application Environment，是与TEE相对的一个环境，或非可信执行环境，或常态运行环境
+TA|可信应用|Trusted Application，它们运行在TEE下
+TPM|可信平台模块|Trusted Platform Module

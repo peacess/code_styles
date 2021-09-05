@@ -23,9 +23,8 @@
 11. 验证开发中的代码，使用单元测试；研究一项目技术实现等使用demo
 12. 如果要使用使用全局变量，给出足够的理由
 13. 提交代码的要求， 说明 格式化 编译通过，如果提交编译不通过的代码需要有特别的理由
-14. 代码原则：   
-    *. 函数内部结构使用数据为主线，分为三大块：定义数据，生成数据，使用数据 例子：
-
+14. 代码原则：     
+    函数内部结构使用数据为主线，分为三大块：定义数据，生成数据，使用数据 例子：
 ```dart
 List<int> funName() {
   //定义数据
@@ -73,26 +72,37 @@ main() {
    interface关键字已经被移除了   
    implements abstractName,className: 可以是abstract或class，可以多个，也就是多实现。实现只会包含实例字段与实例方法，其中实例字段变为get与set方法，所以实现的全是抽象方法；final实例字段与普通实例字段一样   
    extends abstractName/className: 可以是abstract或class，但只能有一个，也就是单继承 with  
-   minxinName1,minxinName2：mixin，可以多个 mixin ... on Name1，Name2: on后面指这个mixin只能使用在指定的classNames上。      
-
+   minxinName1,minxinName2：mixin，可以多个 mixin ... on Name1，Name2: on后面指这个mixin只能使用在指定的classNames上。
 implements与extends的区别是，implements只有抽象方法，extends包含字段,且不会把字段转换为get set。  
-mixin与extends的区别是，mixin with可以多个，有点像“继承”，但mixin是编译时就确定调用方法的，可以说是编译时 多太。而extends是继承，且是运行时多态   
-
--|extends|implements|mixin|-
-----|----|----|----|----
-单个|是     |不        |不
-转字段为get set|否|是|否| 把字段转换为get set方法
-运行多态|是|是|否
-编译多态|否|否|是
-纯抽象方法|否|是|否|方法没有实现体的
-代码后覆盖|否|否|是 | 方法同名时，出现在后面的会覆盖前面的，在调用方法时会调用到后面的，前的被覆盖了。  
+mixin与extends的区别是，mixin with可以多个，有点像“继承”，但mixin是编译时就确定调用方法的，可以说是编译时 多态。而extends是继承，且是运行时多态  
+  
+|              | extends | implements | mixin |note | 
+|----          | ---- | ---- | ---- | ---- |  
+|单个           |是   |不   |不  |    |
+|转字段为get set |否|是|否| 把字段转换为get set方法
+|运行多态        |是|是|否|在运行时通过实例的类型来确定使用的是那个方法
+|编译多态        |否|否|是
+|纯抽象方法      |否|是|否|方法没有实现体的
+|代码后覆盖      |否|否|是 | 在代码编译时，如果方法同名，出现在后面的会覆盖前面的，也就是说调用方法时会调用到后面的。一定注意这发生成编译时，而运行多态发生在运行时
 下面是使用建议及规则  
-    1. 会使用到同一个对象上的mixin不要重名，如果有，给出足够的理由 
-    2. 如果一个class会被用在implements之后，就以interface的方式来设计，需要说明为什么要这样设计
+  + 会使用到同一个对象上的mixin不要重名，如果有，给出足够的理由  
+  + 如果一个class会被用在implements之后，就以interface的方式来设计，需要说明为什么要这样设计  
+  + mixin使用在需要“多继承”时使用，如果extends可以搞定就使用extends  
+  + mixin与implements都可以使用在类似“多继承”的情况，这时看是否需要具体实现，如果需要就使用mixin  
+  + extends与implements的选择也是看是否需要具体实现。  
+  + 怎么选择extends,implements,mixin，一是使用不容易出错，二是编写代码不容易出错，三是相同代码更少或抽象更高  
+```dart
+//mixin的override规划（代码上的后覆盖）
 
-6. “~/” 除，但返回值是整数
-7. 相等比较
-   判两对象是否为 同一个对象，用identical（）方法。
+```
+6. “~/” 整除，返回值是整数
+7. 相等比较  
+   判两对象是否为同一个对象，用identical（）方法，不要使用==，因为==可能会被自定义，==并不是总是表示同一个对象的含义
+   自定义的class，默认的==是否为同一对象，与identical一样
+   String的==是比较字符串是否相等，并不是identical
+   不建议override ==，如果一定要这么做一定要实现相等的[数学规则](https://dart.dev/guides/language/effective-dart/design#equality)，且处理hashCode。  
+当对象作为Map的key时，如果修改对象的字段，hashCode不相同，这是一个头痛的问题。类似的也会发生在排序集合中。
+    
 8. 操作符 ??=,??,?,!
     - a??=value, 如果a为null，则赋值value给a;如果不为null，则a不变
     - 条件表达式 常见表达式 term ? expr1 : expr2

@@ -67,10 +67,90 @@ main() {
 ```
 
 2. 尽量使用明确的数据类型，尽量少使用dynamic类型
-3. 减少关键字var的使用，要使用明确的类型，要么使用dynamic.
-4. dart中并没有public、protected、private等关键字，声明变量与方法时，前面加上 "_" 即可作为private方法使用.  
+3. 优先使用  spread operator
+```dart
+//good:
+var arguments = [
+   ...options,
+   command,
+   ...?modeFlags,
+   for (var path in filePaths)
+      if (path.endsWith('.dart'))
+         path.replaceAll('.dart', '.js')
+];
+```
+```dart
+//bad:
+var arguments = <String>[];
+arguments.addAll(options);
+arguments.add(command);
+if (modeFlags != null) arguments.addAll(modeFlags);
+arguments.addAll(filePaths
+        .where((path) => path.endsWith('.dart'))
+.map((path) => path.replaceAll('.dart', '.js')));
+```
+[spread operator](https://dart.dev/guides/language/language-tour#spread-operator) 是支持?/if/for的，它比较调用方法简洁高效  
+[see](https://dart.dev/guides/language/effective-dart/usage#do-use-collection-literals-when-possible)
+
+4. 优先使用toList，而不是List.from.
+因数toList能保留原来的类型，而List.from后的类型为"List<dynamic>"
+```dart
+// Creates a List<int>:
+var iterable = [1, 2, 3];
+//good:
+// Prints "List<int>":
+print(iterable.toList().runtimeType);
+
+//bad:
+// Prints "List<dynamic>":
+print(List.from(iterable).runtimeType);
+//使用List<int>.from也可以保证类型，但还是iterable.toList()书写方便，toList本类的方法，IDE会直接列出它的方法
+
+//good:
+//List<int>.from可以使用在有类型转换的地方，如下：
+var stuff = <dynamic>[1, 2];
+var ints = List<int>.from(stuff);
+//bad:
+//先使得到集合再转换类型，多了一步
+var intsBad = stuff.toList().cast<int>();
+
+//map也有类型转换或改变值的含义，但map的类型转换不使用在有“cast”这样的转换上面
+//good:
+var reciprocals = stuff.map<double>((n) => 1 / n);
+//bad:
+var reciprocalsBad = stuff.map((n) => 1 / n).cast<double>();
+
+```
+5. [DO use whereType() to filter a collection by type](https://dart.dev/guides/language/effective-dart/usage#do-use-wheretype-to-filter-a-collection-by-type)
+```dart
+var objects = [1, 'a', 2, 'b', 3];
+//good:
+var ints = objects.where((e) => e is int).cast<int>();
+//bad:
+var intsBad = objects.where((e) => e is int);
+```
+6. 不要在代码中使用new关键字，它完全可以不需要
+7. 使用try on语句
+```dart
+//good:
+try {
+ //...
+}
+on Exception catch(e) {
+  //...
+}
+
+//bad:
+try {
+ //...
+}
+catch(e) {
+  //...
+}
+```
+8. dart中并没有public、protected、private等关键字，声明变量与方法时，前面加上 "_" 即可作为private方法使用.  
    注意： "_" 的限制范围并不是类级别，而是库
-5. implements,extends,abstract,class,mixin混入, Extension   
+9. implements,extends,abstract,class,mixin混入, Extension   
    interface关键字已经被移除了   
    implements abstractName,className:
    可以是abstract或class，可以多个，也就是多实现。实现只会包含实例字段与实例方法，其中实例字段变为get与set方法，所以实现的全是抽象方法；final实例字段与普通实例字段一样   
@@ -106,7 +186,89 @@ main() {
    判两对象是否为同一个对象，用identical（）方法，不要使用==，因为==可能会被自定义，==并不是总是表示同一个对象的含义 自定义的class，默认的==是否为同一对象，与identical一样
    String的==是比较字符串是否相等，并不是identical 不建议override
    ==，如果一定要这么做一定要实现相等的[数学规则](https://dart.dev/guides/language/effective-dart/design#equality)，且处理hashCode。  
-   当对象作为Map的key时，如果修改对象的字段，hashCode不相同，这是一个头痛的问题。类似的也会发生在排序集合中。
+   当对象作为Map的key时，如果修改对象的字段，hashCode不相同，这是一个头痛的问题。类似的也会发生在排序集合中。  
+```dart
+
+import 'package:test/test.dart';
+
+class Data {
+  String name = '';
+  @override
+  bool operator ==(Object other) => identical(this, other) || other is Data && runtimeType == other.runtimeType && name == other.name;
+
+  @override
+  int get hashCode => name.hashCode;
+}
+
+class Data2 {
+  String name = '';
+}
+//下面示例说明
+// 1， 虽然已经按照要求来override ==等号了，但是在把对象作为Key放入Map时，仍然会产生奇怪的结果
+// 2，由编译器的优化，对于相同字符串是否为同一个对象，需要写代码来验证，业务的实现不要依赖于是否为同一个对象
+// 3，String的hashCode是字符内容来确实的，也就是说不同对象但内容相同，它们的hashCode也是相同的
+void main() {
+  test('Data override ==', () {
+    Map<Data, int> map = {};
+    Data data = new Data()..name = 'test1';
+    map[data] = map.length;
+    data.name = 'test2';
+    var old = map[data];
+    expect(null, old); //因为hash改变了，所以找不到
+    map[data] = map.length;
+    //同一个对象在同一个map中，“有两个”
+    expect(2, map.length);
+    for (var it in map.entries) {
+      print(it.key.name);
+    }
+  });
+  test('Data2 no override', () {
+    Map<Data2, int> map = {};
+    Data2 data2 = new Data2()..name = 'test1';
+    map[data2] = map.length;
+    data2.name = 'test2';
+    var old = map[data2];
+    expect(0, old);
+    map[data2] = map.length;
+    //只有一个
+    expect(1, map.length);
+  });
+
+  test('String ==',(){
+    String name1 = 'name';
+    String name2 = 'name';
+    expect(name1, name2);
+    //下面的结果是由于字符串优化，两个相等的字符串是同一个对象
+    expect(true, identical(name1, name2));
+
+    //下面使用StringBuffer新构造一个出来，字符串本身是相同的
+    StringBuffer buffer = new StringBuffer("nam");
+    buffer.write("e");
+    String name3 = buffer.toString();
+    expect(false, identical(name1, name3));
+    expect(name1, name3);
+
+    buffer.clear();
+    buffer.write(name1);
+    String name4 = buffer.toString();
+    expect(false, identical(name1, name3));
+    expect(name1, name3);
+    //name3与name1值相等，但不是同一个对象，但于它们的hashCode是相等的
+    expect(name1.hashCode, name3.hashCode);
+
+    buffer = new StringBuffer("");
+    buffer.write(name1);
+    String name5 = buffer.toString();
+    expect(true, identical(name1, name5));//由于buffer的优优，这里并没有产生新的对象
+    expect(name1, name5);
+
+    buffer = new StringBuffer(name1);
+    String name6 = buffer.toString();
+    expect(true, identical(name1, name6));//由于buffer的优优，这里并没有产生新的对象
+    expect(name1, name6);
+  });
+}
+```
 8. 操作符 ??=,??,?,!
     - a??=value, 如果a为null，则赋值value给a;如果不为null，则a不变
     - 条件表达式 常见表达式 term ? expr1 : expr2
@@ -254,7 +416,14 @@ I/flutter (19025): Mission_2
 此时的结果：12，1，11，4，6，5，7，…，2。  
 执行完注释4 的 Future，然后会执行我们在注释3 Future 新加入的 Future，之后注释3 的Future不再阻塞，会继续执行，结果： 12，1，11，4，6，5，7，10，8，9，2。
 
-14. 定义变量时，类型是确定的就给出具体的类型
+14. Future与async函数
+  * async函数中可以使用await  
+  * 如果async函数内没有await，整个调用是同步的  
+  * 如果async函数内有await，在await之前的调用都是同步的，只在遇到await时，函数才返回一个Future，也就是异步的  
+  * async函数的运行可能是同步的，也可能是异步的，可能部分是同步或异步的  
+  * 如果需要严格的异步调用，请使用使用Future，不要使用async函数，因为async函数是否异步决定于函数内的await及位置  
+
+15. 定义变量时，类型是确定的就给出具体的类型
 
 ```dart
 var mx = {}; //不要这样定义map
@@ -265,7 +434,7 @@ var a = <String>[];
 List<String> a = [];
 ```
 
-15. 小心使用?, 避免非空时的异常 在不确定对象是否为空时可以使用?简化代码，但不要误以为?一定不会抛出异常
+16. 小心使用?, 避免非空时的异常 在不确定对象是否为空时可以使用?简化代码，但不要误以为?一定不会抛出异常
 
 ```dart
 
@@ -277,6 +446,36 @@ var first = a?.first;
 ```
 
 ## 库
+
+### flutter
+1. 在flutter的initState函数中，想要在界面存在即以build之后运行一次。
+```dart
+  @override
+  void initState() {
+    super.initState();
+    Future(() {
+      if(mounted) { //避免在dispose之后，再调用setState
+        setState(() {
+          doOnceSomething();
+        });
+      }
+    });
+  }
+  
+  //错误的处理方式，在调用async函数时，是同步调用的，只有遇到await时，才会出现异步的情况
+  @override
+  void initState() {
+    super.initState();
+    () async {
+      if(mounted) { 
+        setState(() {
+          doOnceSomething();
+        });
+      }
+    }();
+    print('initState');
+  }
+```
 
 ### source_gen
 

@@ -1,32 +1,20 @@
 [中文](./codestyle_dart-cn.md)
 
 # Code Style -- dart 0.2
+## Dart语言概要
+1. Dart中的线程叫Isolate，在Isolate之间不能共享内存（就是A Isolate中的变量V1，不能被其它Isolate直接使用），  
+这个特点与常见的语言Rust/Go/Java/C++等都不一样，Isolate的隔离性有点像操作系统的进程，只不过它是在操作系统的线程上实现的。  
+所以Dart中没有Mutex，写代码时不用考虑线程的数据安全；全局变量在每个Isolate中都是独立的。
+2. Dart支持JIT(Just in time)与AOT(ahead of time)，JIT时方便于开发，IOT时运行性能好
+3. Dart有垃圾回收
+4. Dart不适合高并发的服务端程序，因为它的Isolate。很适合UI开发
 
 ## 规则
-
-1. 遵守软件设计六大原则
-    1. 开-闭原则(Open-Closed Principle, OCP)
-    2. 里氏代换原则(Liskov Substitution Principle,常缩写为.LSP)
-    3. 依赖倒置原则(Dependence Inversion Principle)
-    4. 口隔离原则(Interface Segregation Principle, ISP)
-    5. 迪米特法则(Law of Demeter LoD)又叫做最少知识原则(Least Knowledge Principle,LKP)
-    6. 单一职责原则(Simple responsibility principle SRP)
-2. 功能完成，不是在自己电脑上能运行，是要整个项目能正常运行部署
-3. 把问题拿出，不要把它遗忘在开发的过程中，在代码中加入 todo 说明，添加到github的issues
-4. 先思考后写代码，从命名开始
-5. 处理每一个error，并记录到日志中（最终写入日志中）
-6. 处理所有分支，特别出现的异常情况的分支（如，不应该出现的数据等，写入error日志）
-7. 重要调用都需要写入 info日志
-8. 直接对外提供服务接口，必须稳定，不能因为一个错误就让整个服务停止工作
-9. 对外提供的接口，统一错误编号及错误信息
-10. 定义函数时要考虑两个方面，一实现函数代码是否合理，二使用是否方便，是否容易出错
-11. 验证开发中的代码，使用单元测试；研究一项目技术实现等使用demo
-12. 如果要使用使用全局变量，给出足够的理由
-13. 提交代码的要求， 说明 格式化 编译通过，如果提交编译不通过的代码需要有特别的理由
-14. 代码原则：  
-    函数内部结构使用数据为主线，分为三大块：定义数据，生成数据，使用数据 例子：
+[参见](./development_roles-cn.md)
 
 ```dart
+//代码规则的例子
+
 List<int> funName() {
   //定义数据
   var data = <int>[];

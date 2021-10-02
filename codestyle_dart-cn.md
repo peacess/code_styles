@@ -442,7 +442,7 @@ var first = a?.first;
   void initState() {
     super.initState();
     Future(() {
-      if(mounted) { //避免在dispose之后，再调用setState
+      if(mounted) { //避免在dispose之后或界面没有成功初始化，再调用setState
         setState(() {
           doOnceSomething();
         });
@@ -464,6 +464,12 @@ var first = a?.first;
     print('initState');
   }
 ```
+2. flutter性能优化  
+[官网参考](https://flutter.dev/docs/perf)  
+[Flutter performance tips](https://itnext.io/flutter-performance-tips-4580b2491da8)  
+   1. 在build函数中优先使用class而不是使用function返回widget，因为直接使用类时，框架会优化
+   2. 
+3. other
 
 ### source_gen
 

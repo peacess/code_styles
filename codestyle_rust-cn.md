@@ -303,23 +303,59 @@ let d = Data {};
 d();
 (&d)();
 ```
-13. std::Vec实现说明
+13. Use impl Trait when working with Closures  
+[see](https://federicoterzi.com/blog/12-rust-tips-and-tricks-you-might-not-know-yet/)  
+Prefer impl Fn/FnOnce/FnMut to pass a closure to a function (called impl Trait) instead of a generic when possible to keep the signature clean. For non-trivial cases, you might need to box the closure with Box<Fn()>, but keep in mind you’ll pay an additional overhead
+```rust
+fn setup_teardown_generic<A: FnOnce()>(action: A) {
+    println!("setting up...");
+    
+    action();
+    
+    println!("tearing down...")
+}
+
+// Use this
+
+fn setup_teardown(action: impl FnOnce()) {
+    println!("setting up...");
+    
+    action();
+    
+    println!("tearing down...")
+}
+
+// As a note, this pattern is very useful inside tests
+// to create/destroy resources.
+
+fn main() {
+    setup_teardown(|| {
+        println!("Action!");
+    })
+    
+    // Output:
+    // setting up...
+    // Action!
+    // tearing down...
+}
+```
+14. std::Vec实现说明
     * set_len是不安全函数，要小心使用
     *
 
 ```rust
 
 ```
-13. 析构函数简单可靠，不要执行不确定或费时费力或阻塞操作  
+15. 析构函数简单可靠，不要执行不确定或费时费力或阻塞操作  
     析构函数主要是指像drop，close等方法，
-14. 如果trait不希望被crate外实现，使用private::Sealed
+16. 如果trait不希望被crate外实现，使用private::Sealed
 ```rust
 pub trait InnerTrait: private::Sealed {
     //...
 }
 ```    
 
-15. derive与trait bound都可以实现时，优先使用derive，它使用更简单
+17. derive与trait bound都可以实现时，优先使用derive，它使用更简单
 ```rust
 // 优先使用这个
 #[derive(Debug, PartialEq)]
@@ -329,7 +365,7 @@ struct Good<T> { /* ... */ }
 #[derive(Debug, PartialEq)]
 struct Bad<T: Debug + PartialEq> { /* ... */ }
 ```
-16. 小心使用Copy trait。
+18. 小心使用Copy trait。
    在绝大部分情况下都不需要实现Copy trait，因为一但实现，它会在变量赋值或传参数时自动隐式调用，这个过程很难被注意到，会产生很大的浪费。
 
 ### 多线程

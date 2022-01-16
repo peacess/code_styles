@@ -98,7 +98,25 @@ writeln!(lock, "{}", line)?;
 
 ```
 
-8. Box::new 使用了一个神奇的单词“box”，它的作用是把对象安全的移动到heap上面，它在编译时可能会作优化以减少内存上的不必须的复制移动 ？分配两次
+8. &mut T/mut &T的不同
+&mut T是一个引用类型，指向个可以变的T，引用本身不可变。
+mut &T是一个引用类型，引用本身可变，指向内容不可以。
+
+```rust
+let mut t = 1;
+let ref1_t = &t;//ref_t1为 &T类型
+// ref1_t = &t1; //不是mut &，不能二次赋值
+// *ref1_t = 2;  //不是 mut t，不能二次赋值 
+
+let ref2_t = &mut t;
+// ref2_t = &t2;  //不是mut &，不能二次赋值
+*ref2_t = 3;//是 mut t，能二次赋值
+
+let mut ref_t3 = &mut t;
+ref_t3 = &mut t; //是mut &，能二次赋值
+*ref_t3 = 2;  //是 mut t，能二次赋值
+```
+9. Box::new 使用了一个神奇的单词“box”，它的作用是把对象安全的移动到heap上面，它在编译时可能会作优化以减少内存上的不必须的复制移动 ？分配两次
 
 ```rust
 let d = Box::new(Data::default ());

@@ -35,34 +35,42 @@ fn main() {
 ### 在多线程下，当有两个int32变量时，使用什么？
 如果这两个变量之间有关联，如 "if a==1 then b=1"，就需要特别小心的使用Ordering。例子：
 ```rust
+use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, fence, Ordering};
+use std::thread;
+
+#[test]
 fn main() {
    let a = Arc::new(AtomicBool::new(false));
    let b = Arc::new(AtomicBool::new(false));
 
-   loop {
+   for _ in 0..100 {
       let a_clone = a.clone();
       let b_clone = b.clone();
       let t1 = thread::spawn(move || {
-         a_clone.store(true, Ordering::Release);
-         b_clone.store(true, Ordering::Release);
+         a_clone.store(true, Ordering::Relaxed);
+         fence(Ordering::Release);
+         b_clone.store(true, Ordering::Relaxed);
       });
-   
+
       let a_clone = a.clone();
       let b_clone = b.clone();
       let t2 = thread::spawn(move || {
-         while !b_clone.load(Ordering::Acquire){}
-         let a = a_clone.load(Ordering::Acquire);
+         while !b_clone.load(Ordering::Relaxed){}
+         fence(Ordering::Acquire);
+         let a = a_clone.load(Ordering::Relaxed);
          println!("a = {},b = true",a);
       });
 
       let a_clone = a.clone();
       let b_clone = b.clone();
       let t3 = thread::spawn(move || {
-         while !a_clone.load(Ordering::Acquire){}
-         let b = b_clone.load(Ordering::Acquire);
+         while !a_clone.load(Ordering::Relaxed){}
+         fence(Ordering::Acquire);
+         let b = b_clone.load(Ordering::Relaxed);
          println!("a = true,b = {}",b);
       });
-   
+
       let _ = t1.join();
       let _ = t2.join();
       let _ = t3.join();

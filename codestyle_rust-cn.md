@@ -83,23 +83,27 @@ writeln!(lock, "{}", line)?;
 
 ### Pointer/Reference
 
-7. Rust中的引用是一种特殊的指针。
+7. Rust中的引用是一种安全的指针。
     * 它由编译器来保证引用的有效性
     * 在Rust的安全代码中，所有的引用都是有效的
     * 在c++中的”引用“，是一个变量的别名，他们就是同一个对象，没有产生新的内存或对象
     * rust的引用与C++中的”引用“不是一个概念。 
-    * Rust、Java、Go、Dart等语言都不支持引传参（函数参数），所以它们的引用都是类似指针。也可以这样说，不支持引用传参的语言不支持真正的引用（这里只限于我自己接触过的语言）
+    * Rust、Java、Go、Dart等语言都不支持引用传参（函数参数），所以它们的引用都是类似指针。也可以这样说，不支持引用传参的语言不支持真正的引用（这里只限于我自己接触过的语言）
     * C++与C#支持引用传参数，也是支持别名方式的引用。
 
-```rust
+[rust assign](https://github.com/freepeace/rust/blob/master/src/lang_/assignment.rs)
 
-```
+8. 赋值
+    * 函数调用的传参数也是一种赋值，所有的赋值都是一次复制
+    * 非引用赋值是浅copy -- 这就是所有权转移。
+    * 如果实现了Copy trait那么赋值会调用clone方法生成一个新对象，基本类型都实现了Copy trait。
+    * 引用赋值可以看作是usize类型的一次赋值（usize实现Copy trait）
+    * c++中的引用是没有copy的。换句话说它是别名，是同一个对象，是没有内存代价。而rust中的赋值是有内存代价
+    * let ref a = ..与 let a = &..产生的变量是一样的，ref多用在match中  
 
-```C++
-
-```
-
-8. &mut T/mut &T的不同
+   
+[rust assign](https://github.com/freepeace/rust/blob/master/src/lang_/assignment.rs)
+9. &mut T/mut &T的不同
 &mut T是一个引用类型，指向个可以变的T，引用本身不可变。
 mut &T是一个引用类型，引用本身可变，指向内容不可以。
 

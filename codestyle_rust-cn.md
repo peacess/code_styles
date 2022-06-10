@@ -388,8 +388,34 @@ struct Good<T> { /* ... */ }
 #[derive(Debug, PartialEq)]
 struct Bad<T: Debug + PartialEq> { /* ... */ }
 ```
-18. 小心使用Copy trait。
+18. 小心使用Copy trait。  
    在绝大部分情况下都不需要实现Copy trait，因为一但实现，它会在变量赋值或传参数时自动隐式调用，这个过程很难被注意到，会产生很大的浪费。
+19. trait object  
+    [see](https://doc.rust-lang.org/error-index.html#E0038)
+    * dyn Trait与Trait都是 unsized
+    * dyn Trait自动实现 Trait，在泛型参数为“T: Trait + ?Sized”时可以传放 &dyn Trait。所以dyn Trait自己实现了Trait  
+      ```rust
+      fn main() {
+          trait Trait {
+          }
+          fn static_foo<T:Trait + ?Sized>(b: &T) {
+          }
+          fn dynamic_bar(a: &dyn Trait) {
+              static_foo(a)
+          }
+      }
+      ```
+    * object-safe,有两个要求
+        1. unsized，只能定义 &dyn Trait or Box<dyn Trait>
+        2. trait object 包含 data与vtable，它需要在编译时能确定
+        3. 不能是trait object或不是object-safe的情况
+            * 不能是Trait: Sized的，因为dyn Trait自动实现 Trait，如果是Trait: Sized，也就是要求dyn Trait是Sized，这是茅盾的
+            * fn 不能返回 Self type，因为在编译时通过 trait object无法确定返回的Self是什么类型。注：这里可以加上“ where Self: Sized”  
+              让这个方法不是trait object的方法
+            * fn中不能有generic type parameters，因为在编译时无法通过trait object确定参数类型
+            * trait中的方法不带self，这个方法与vtable没有关系，所以无法通过运行时的vtable来确定调用方法
+            * trait中有常理“associated constants”，与不带self的方法类似
+
 
 ### 多线程
 

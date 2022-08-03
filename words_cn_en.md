@@ -24,10 +24,11 @@
 | eip            | eip     | Ethereum Request For Comment/以太坊意见征求稿，erc的范围更大                                                                                                                                                                                                             |
 | erc            | erc     | Ethereum Improvement Proposals/以太坊改进建议                                                                                                                                                                                                                     |
 | rfc            | rfc     | 请求意见稿（英语：Request for Comments，缩写：RFC）                                                                                                                                                                                                                      |
-| erc20          | erc20   |                                                                                                                                                                                                                                                            |
-| erc223         | erc223  |                                                                                                                                                                                                                                                            |
-| erc721         | erc721  |                                                                                                                                                                                                                                                            |
-| erc1155        | erc1155 |                                                                                                                                                                                                                                                            |
+| erc20          | erc20   | [eip20](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md)                                                                                                                                                                                       |
+| erc223         | erc223  | [erc223-issues](https://github.com/ethereum/eips/issues/223)                                                                                                                                                                                               |
+| erc721         | erc721  | [eip721](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-721.md)                                                                                                                                                                                     |
+| erc1155        | erc1155 | [eip1155](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-1155.md)                                                                                                                                                                                   |
+| erc998         | erc998  | [eip998](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-998.md)                                                                                                                                                                                     |
 | symbol         | symbol  | token的symbol，如eth等                                                                                                                                                                                                                                         |
 | decimals       | 精度      | 就是小数后的位数，注意有s                                                                                                                                                                                                                                              |
 | balance        | 余额      |                                                                                                                                                                                                                                                            |
@@ -48,7 +49,9 @@
 | jdk            | jdk     | java development kit，java开发工具包，不建议翻译为中文                                                                                                                                                                                                                    |
 | UB             | UB      | undefined behavior,未定义行为                                                                                                                                                                                                                                   |
 | WebRTC         | WebRTC  | 全名Real-time communication for the web，是一种端到端的实时通信，主流的浏览器都支持（也有native api支持非浏览器下使用）。主要有两部分，一是建立端到端的连接，二是支持音视频及数据                                                                                                                                            |
-
+| JNI            | JNI     | java native interface，[JNI, JNA, JNR](https://nullwy.me/2018/01/java-ffi/)                                                                                                                                                                                 |
+| JNR            | JNR     | java native runtime, 性能是JNI的75%                                                                                                                                                                                                                            |
+| JNA            | JNA     | java native access, JNA(Direct Mapping)性能是JNI的13%, JNA(interface Mapping)是JNI的11%                                                                                                                                                                          |
 ## 方法名，一般为动词
 
 | en      | cn  | note                                      |
@@ -67,22 +70,24 @@
 
 ## 正反词
 
-| en             | cn    | node               |
-|----------------|-------|--------------------|
-| add/remove     | 添加/删除 | 不要与insert/delete混用 |
-| insert/delete  | 插入/删除 | 不要与add/remove混用    |
-| open/close     | 打开/关闭 |                    |
-| begin/end      |       |                    |
-| start/stop     |       |                    |
-| show/hide      |       |                    |
-| create/destroy |       |                    |
-| source/target  |       |                    |
-| first/last     |       |                    |
-| min/max        |       |                    |
-| get/set        |       |                    |
-| up/down        |       |                    |
-| old/new        |       |                    |
-| next/previous  |       |                    |
+| en             | cn          | node                          |
+|----------------|-------------|-------------------------------|
+| add/remove     | 添加/删除       | 不要与insert/delete混用            |
+| insert/delete  | 插入/删除       | 不要与add/remove混用               |
+| new/delete     | 分配/释放，创建/删除 | 不要与add/remove，insert/delete混用 |
+| alloc/free     | 分配/释放       | 最好不要与new/delete混用             |
+| open/close     | 打开/关闭       |                               |
+| begin/end      |             |                               |
+| start/stop     |             |                               |
+| show/hide      |             |                               |
+| create/destroy |             |                               |
+| source/target  |             |                               |
+| first/last     |             |                               |
+| min/max        |             |                               |
+| get/set        |             |                               |
+| up/down        |             |                               |
+| old/new        |             |                               |
+| next/previous  |             |                               |
 
 ## 密码加密或签名
 
@@ -97,17 +102,17 @@
 | EdDSA                   | EdDSA                           | Edwards-curve Digital Signature Algorithm (EdDSA)，是基于Edwards曲线，第二个字母d是小写。                               |
 | signature               | 签名                              | 名词，表示签名后的数据                                                                                             |
 | sign                    | 签名                              | 动词，表示签名的动着                                                                                              |
-| verify                  |                                 | 验证签名，当使用在签名时                                                                                            |
+| verify                  | 验签                              | 验证签名，当使用在签名时                                                                                            |
 | DH                      | DH                              | 迪菲-赫尔曼密钥交换（英语：Diffie–Hellman key exchange，缩写为D-H）                                                       |
 | ECDH                    | ECDH                            | 椭圆曲线迪菲-赫尔曼密钥交换（英语：Elliptic Curve Diffie–Hellman key exchange，缩写为ECDH）                                   |
-| secp256k1               | secp256k1                       | NIST系列曲线之一，被用来做签名算法，属于ECDSA，这条曲线也可以用于ECDH                                                               |
-| curve25519              | curve25519                      | 25519椭圆曲线的一种，蒙哥马利曲线（Montgomery Curve）                                                                   |
+| secp256k1               | secp256k1                       | NIST系列曲线之一，被用来做签名算法，属于ECDSA，这条曲线也可以用于ECDH/E                                                             |
+| curve25519              | curve25519                      | 25519椭圆曲线的一种，蒙哥马利曲线（Montgomery Curve），使用在ECDH/E                                                         |
 | ed25519                 | ed25519                         | 使用curve25519，爱德华曲线（Edwards Curve），做签名，属于EdDSA                                                           |
-| x25519                  |                                 | 使用curve25519来做ECDH的                                                                                     |
+| x25519                  |                                 | 把curve25519理解为一种曲线，那么x25519就是使用这条曲线来做ECDH/E的，很多时候x25519与curve25519是同一个意思                                |
 | Forward Secrecy         |                                 | 前向保密（英语：Forward Secrecy，FS）                                                                             |
 | Perfect Forward Secrecy |                                 | 完全前向保密（英语：Perfect Forward Secrecy，PFS）                                                                  |
-| DHE                     | DHE                             | 迪菲-赫尔曼密钥交换（DHE，DH Ephemeral）的前向安全通讯                                                                     |
-| ECDHE                   | ECDHE                           | 基于椭圆曲线迪菲-赫尔曼密钥交换（ECDHE，ECDH Ephemeral）的前向安全通讯                                                           |
+| DHE                     | DHE                             | 迪菲-赫尔曼密钥交换（DHE，DH Ephemeral）,且前向安全                                                                      |
+| ECDHE                   | ECDHE                           | 基于椭圆曲线迪菲-赫尔曼密钥交换（ECDHE，ECDH Ephemeral），且前向安全                                                            |
 | Schnorr                 | Schnorr                         |                                                                                                         |
 | MuSig                   | MuSig                           | MuSig：由Blockstream提出的Schnorr签名方案                                                                        |
 | BLS                     | BLS                             | Boneh–Lynn–Shacham的简称，[see](https://www.huaweicloud.com/articles/8070926317314981b8e684133ce7ce8b.html) |

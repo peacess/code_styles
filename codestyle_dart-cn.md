@@ -432,6 +432,29 @@ var first = a?.first;
 //1,如果a为null，那么first为null
 //2,如果a不为空存，那么调用first函数。特别注意如果a数组的长度为零时，它会抛出异常
 ```
+17. Datetime使用注意
+ * 时间戳不变
+```dart
+//使用时间戳创建datetime时，再次取出时间戳时，与最开始创建时的值相等， 就算进行各种变量也是相
+var t1 = DateTime.fromMillisecondsSinceEpoch(1000, isUtc: true);
+var t2 = DateTime.fromMillisecondsSinceEpoch(1000,isUtc: false);
+//时间戳相等
+expect(t1.millisecondsSinceEpoch, equals(t2.millisecondsSinceEpoch));
+//转换为utc后，时间戳仍然相等
+expect(t1.toUtc().millisecondsSinceEpoch, equals(t2.toUtc().millisecondsSinceEpoch));
+//直接比较时间也相等
+expect(0, equals(t1.compareTo(t2)));//
+//通过上面的测试结果就是，通过时间戳创建的datetime，在比较时使用的是传入的时间戳
+```
+* utc timestamp to local timestamp
+```dart
+//把 utc时间转换为 local
+var t1 = DateTime.fromMillisecondsSinceEpoch(1000, isUtc: true);
+var t3 = DateTime(t1.year,t1.month,t1.day,t1.hour,t1.minute,t1.second,t1.millisecond,t1.microsecond);
+//不要使用这种转换，它的时间戳还是原来的没有变华
+var tError = t1.toLocal();
+expect(t1.millisecondsSinceEpoch, tError.millisecondsSinceEpoch);
+```
 
 ## 库
 

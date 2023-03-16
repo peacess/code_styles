@@ -541,6 +541,33 @@ Send这个trait是自动的，block中的所有内容都可以安全的Send，�
 
 最后一定要看编译器的提示，这是最高效的解决方法
 
+### 声明宏
+1. 如果引用了函数或类型，请使用$crate来定位类型或函数。 因为，如果宏被export后，默认会调用上下文件查找类型或函数，正常情况下这不是需要的。
+[see](https://rustcc.cn/article?id=28489e40-692f-4487-a434-c29b8cd9a817)
+```rust
+#[macro_export]
+macro_rules! helper {
+    ($text: expr) => ($crate::logger::log2db($text))
+}
+pub mod logger {
+    pub fn log2db(text: String) {
+        println!("写 {} 进入数据库", text);
+    }
+}
+```
+2. 尽量不使用宏参名，定义变量， 这样如果宏参数名与宏内定义的变量名相同时，会优先使用宏展开中的变量
+```rust
+let six = 6;
+macro_rules using_a {
+    ($a:ident,$e:expr) => [{
+        let $a = 38;
+        let a = 32; // 由于宏展开的上下文是一个更小的范围，所以这里的a变量。所以在编译时会有警告，定义的变量a没有被使用
+        $e/six // 这里的结果是 (38 + 10)/6 = 8
+    }]
+}
+let eight = using_a!(a,a+10);// 结果是8而不是7
+//编译时程序会输出一个警告，le
+```
 ### 代码提交前准备
 
 1. fmt --> clippy --> cargo test --no-run。这三样通过后，才提交代码

@@ -908,10 +908,37 @@ func TestJsonData(t *testing.T) {
 }
 ```
 
-以上代码中Unmarshal的结构不是预期的结果，原因是“func (c *JsonData) MarshalJSON() (bytes []byte, err error)”中的receiver是pointer。
+```go
+type JsonData struct {
+    name string
+}
+
+func (c JsonData) MarshalJSON() (bytes []byte, err error) {
+    return json.Marshal(c.name)
+}
+
+func (c *JsonData) UnmarshalJSON(bytes []byte) error {
+    return json.Unmarshal(bytes, &c.name)
+}
+
+func TestJsonData(t *testing.T) {
+   d := JsonData{name: "test"}
+   bytes, err := json.Marshal(&d)
+   assert.Equal(t, nil, err)
+   var d2 JsonData
+   err = json.Unmarshal(bytes, &d2)
+   assert.Equal(t, nil, err) //has error，为什么？
+   assert.Equal(t, d, d2) //not eq， 有两种方法，可以更正结果，一种是增加一个符号“&”,一种是删除一个符号“*”
+}
+```
+
+   以上代码中Unmarshal的结构不是预期的结果，原因是“func (c *JsonData) MarshalJSON() (bytes []byte, err error)”中的receiver是pointer。  
+不使用反射调用时，编译会自动取non-pointer的指来调用方法MarshalJSON是没有问题的，但是json.Marshal方法中使用的是反射，而non-pointer对像是没有实现  MarshalJSON的，所以json.Marshal中会使用默认的反序列化方法。  
 这样如果在使用时如果没有使用pointer类型那么这个方法就不会生效。终上建议如下：
-   * MarshalJSON方法的receiver不要使用pointer，如果要使用给出足够的理由及详细的文档说明
+   * 如果对象比较小时，MarshalJSON的receiver不使用指针
+   * MarshalJSON方法的receiver使用pointer（减少不必要的复本），在调用Marshal时必须使用pointer
    * 自定义实现MarshalJSON与UnmarshalJSON的，在test中需要包含指针及非指针的测试用例
+   * UnmarshalJSON的实现receiver必须是指针，因为只有指针才可以带出值来
 
 ### 参考
 
